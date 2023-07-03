@@ -4,6 +4,15 @@ from .serializers import UsersSerializer
 
 # Lead Viewset
 class UsersViewSet(viewsets.ModelViewSet):
-    queryset = Users.objects.all()
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
     serializer_class = UsersSerializer
-    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return self.request.users.all()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
